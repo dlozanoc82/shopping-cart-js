@@ -2,14 +2,22 @@
 const carrito = document.querySelector('#carrito');
 const listaCursos = document.querySelector('#lista-cursos');
 const contenedorCarrito = document.querySelector('#lista-carrito tbody');
-const vaciarCarrito = document.querySelector('#vaciar-carrito');
+const vaciarCarritoBtn = document.querySelector('#vaciar-carrito');
 let articulosCarrito = [];
 
 cargarEventListeners();
 
 function cargarEventListeners(){
+    
     // Captura el evento "Agregar al Carrito"
     listaCursos.addEventListener('click', agregarCurso);
+
+    // Elimina cursos del carrito
+    carrito.addEventListener('click', elminarCurso)
+
+    // Vaciar carrito
+    vaciarCarritoBtn.addEventListener('click', vaciarCarrito);
+
 }
 
 /* ------- FUNCIONES --------*/ 
@@ -24,11 +32,28 @@ function agregarCurso(e){
     }
 }
 
+// Elimina el curso del Carrito
+function elminarCurso(e){
+    
+    if(e.target.classList.contains('borrar-curso')){
+
+        const cursoId = e.target.getAttribute('data-id');
+        articulosCarrito = articulosCarrito.filter(curso => curso.id !== cursoId);
+        carritoHTML();
+
+    }
+
+}
+
+// Vaciar carrito
+function vaciarCarrito(){
+    articulosCarrito = [];
+    carritoHTML();
+}
+
 // Lee el HTML y extrae la información del curso
 function leerDatosCurso(curso){
    
-    console.log(curso);
-
     // Crear objeto con el contenido del curso
     const infoCurso = {
         imagen: curso.querySelector('img').src,
@@ -40,6 +65,7 @@ function leerDatosCurso(curso){
 
     // Validar existencia en el carrito
     const existe = articulosCarrito.some(curso => curso.id === infoCurso.id);
+
     if(existe){
 
         const cursos = articulosCarrito.map(curso => {
@@ -51,17 +77,13 @@ function leerDatosCurso(curso){
             }
         });
 
-        articulosCarrito = [...cursos];
+        articulosCarrito = [...cursos]; // Actualiza elementos al arreglo del carrito
 
     }else{
-        // Agregar elementos al arreglo del carrito
-        articulosCarrito = [...articulosCarrito, infoCurso];
+        articulosCarrito = [...articulosCarrito, infoCurso]; // Agregar elementos al arreglo del carrito
     }
     
-    
-    console.log(articulosCarrito);
     carritoHTML();
-
 }
 
 // Mostrar la informacion en el carrito de compras
@@ -72,8 +94,9 @@ function carritoHTML(){
 
     // Recorre el carrito y genera el HTML
     articulosCarrito.forEach( curso =>{
-        console.log(curso);
+
         const { imagen, titulo, precio, cantidad, id } = curso;
+
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>
@@ -89,6 +112,7 @@ function carritoHTML(){
         
         //Agrega el HTML del carrito en el tbody
         contenedorCarrito.appendChild(row);
+
     })
 }
 
@@ -102,3 +126,4 @@ function limpiarHTML(){
     }
 
 }
+
